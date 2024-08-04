@@ -3,7 +3,7 @@ pipeline {
         NodejsHome = tool "myNode"
         dockerHome = tool "myDocker"
         SonarQubeHome = tool "mySonar"
-        OWASP_HOME = tool "DP-Check"  // Name defined in Global Tool Configuration
+        OWASP_HOME = tool "DP-Check"
         NVD_KEY = credentials('NVD_KEY')  // Accessing the NVD API key from Jenkins credentials
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
         SONARQUBE_TOKEN = credentials('SonarNetflix')
@@ -25,6 +25,15 @@ pipeline {
                 }
             }
         }
+        stage('OWASP FS SCAN') {
+            steps {
+                script {
+                echo 'Running OWASP Dependency-Check...'
+                sh "/opt/dependency-check/bin/dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${NVD_KEY} -o ./dependency-check-report.xml"
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -35,18 +44,7 @@ pipeline {
                 }
             }
         }
-        stage('OWASP FS SCAN') {
-            steps {
-                script {
-                    echo 'Running OWASP Dependency-Check...'
-                    def dependencyCheckPath = "${OWASP_HOME}/bin/dependency-check.sh"
-                    def dependencyCheckCommand = "${dependencyCheckPath} --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${NVD_KEY} -o ./dependency-check-report.xml"
-                    echo "Running command: ${dependencyCheckCommand}"
-                    sh "${dependencyCheckCommand} || { echo 'Dependency-Check failed'; exit 1; }"
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
+        
         stage('Build Docker Image') {
             steps {
                 script {
