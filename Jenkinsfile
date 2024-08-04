@@ -46,16 +46,6 @@ pipeline {
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    echo 'Running SonarQube analysis...'
-                    withSonarQubeEnv('mySonar') {
-                        sh 'sonar-scanner -Dsonar.projectKey=Netflix -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONARQUBE_TOKEN}'
-                    }
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
