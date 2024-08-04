@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                 echo 'Running OWASP Dependency-Check...'
-                sh "dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
+                sh "dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${NVD_KEY} -o ./dependency-check-report.xml"
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
