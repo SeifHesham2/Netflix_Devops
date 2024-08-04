@@ -1,17 +1,15 @@
 pipeline {
-    agent any
-
     environment {
-        // Define tools and credentials
         NodejsHome = tool "myNode"
         dockerHome = tool "myDocker"
         SonarQubeHome = tool "mySonar"
-        OWASP_HOME = tool "myDp"  // OWASP Dependency-Check installation
+        OWASP_HOME = tool "myDp"
         NVD_KEY = credentials('NVD_KEY')
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
-        SONARQUBE_TOKEN = credentials('SonarNetflix')
+        SONARQUBE_TOKEN = credentials('SonarNetflix') 
         PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${OWASP_HOME}/bin:${PATH}"
     }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -19,7 +17,6 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 script {
@@ -28,12 +25,11 @@ pipeline {
                 }
             }
         }
-
         stage('OWASP Dependency-Check') {
             steps {
                 script {
                     echo 'Running OWASP Dependency-Check...'
-                    sh "${OWASP_HOME}/bin/dependency-check.sh --project 'Netlifex' --scan . --nvdApiKey=${NVD_KEY} "
+                    sh 'dependency-check.sh --project "Netlifex" --scan . --nvdApiKey=${NVD_KEY}'
                 }
             }
             post {
@@ -42,7 +38,6 @@ pipeline {
                 }
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -53,7 +48,6 @@ pipeline {
                 }
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
@@ -66,7 +60,6 @@ pipeline {
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 script {
@@ -77,7 +70,6 @@ pipeline {
                 }
             }
         }
-
         stage('Start Minikube') {
             steps {
                 script {
@@ -86,7 +78,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to Kubernetes') {
             steps {
                 script {
@@ -96,7 +87,6 @@ pipeline {
                 }
             }
         }
-
         stage('Verify Deployment') {
             steps {
                 script {
@@ -107,7 +97,6 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             emailext(
