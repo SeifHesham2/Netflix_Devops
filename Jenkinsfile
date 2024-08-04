@@ -16,7 +16,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
                 script {
                     echo 'Installing npm dependencies...'
