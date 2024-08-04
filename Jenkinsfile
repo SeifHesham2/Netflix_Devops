@@ -6,7 +6,7 @@ pipeline {
         OWASP_HOME = tool "myDp"
         NVD_KEY = credentials('NVD_KEY')
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
-        SONARQUBE_TOKEN = credentials('SonarNetflix')
+        SONARQUBE_TOKEN = credentials('SonarNetflix') 
         PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${OWASP_HOME}/bin:${PATH}"
     }
     agent any
@@ -29,27 +29,12 @@ pipeline {
             steps {
                 script {
                     echo 'Running OWASP Dependency-Check...'
-                    sh '''
-                    #!/bin/bash
-                    set -x  # Enable debug mode
-                    dependency-check.sh --project "Netlifex" --scan . --nvdApiKey=${NVD_KEY} --format XML --out ./reports || {
-                        echo "OWASP Dependency-Check failed"
-                        exit 1
-                    }
-                    '''
+                    sh 'dependency-check.sh --project "Netlifex" --scan . --nvd.apiKey=${NVD_KEY}'
                 }
             }
             post {
                 always {
-                    script {
-                        echo 'Listing report files for debugging...'
-                        sh 'ls -la ./reports'
-                        
-                        echo 'Inspecting XML file for issues...'
-                        sh 'head -n 20 ./reports/dependency-check-report.xml'
-                        sh 'tail -n 20 ./reports/dependency-check-report.xml'
-                    }
-                    dependencyCheckPublisher pattern: './reports/dependency-check-report.xml'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
