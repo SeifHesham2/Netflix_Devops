@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netflix-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: netflix
+  template:
+    metadata:
+      labels:
+        app: netflix
+    spec:
+      containers:
+        - name: netflix-container1 # Ensure this is lowercase and valid
+          image: seifseddik120/netflix-2024:${BUILD_NUMBER}
+          ports:
+            - containerPort: 80
