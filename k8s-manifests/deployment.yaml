@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: netflix-container1 # Ensure this is lowercase and valid
-          image: seifseddik120/netflix-2024:${BUILD_NUMBER}
+          image: seifseddik120/netflix-2024:142
           ports:
             - containerPort: 80
