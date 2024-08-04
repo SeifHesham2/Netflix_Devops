@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running OWASP Dependency-Check...'
-                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${env.NVD_KEY} -Ddelay=6000", odcInstallation: 'DP-Check'
+                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey '${env.NVD_KEY}' --cveWaitTime 6000", odcInstallation: 'DP-Check'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
