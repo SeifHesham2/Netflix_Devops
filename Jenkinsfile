@@ -25,10 +25,13 @@ pipeline {
                 }
             }
         }
-        stage('Debug') {
+        stage('SonarQube Analysis') {
             steps {
                 script {
-                    echo "NVD_KEY: ${env.NVD_KEY}"
+                    echo 'Running SonarQube analysis...'
+                    withSonarQubeEnv('mySonar') {
+                        sh 'sonar-scanner -Dsonar.projectKey=Netflix -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONARQUBE_TOKEN}'
+                    }
                 }
             }
         }
