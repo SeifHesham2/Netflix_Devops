@@ -3,10 +3,11 @@ pipeline {
         NodejsHome = tool "myNode"
         dockerHome = tool "myDocker"
         SonarQubeHome = tool "mySonar"
+        OWASP_HOME = tool "DP-Check"
         NVD_KEY = credentials('NVD_KEY')  // Accessing the NVD API key from Jenkins credentials
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
         SONARQUBE_TOKEN = credentials('SonarNetflix')
-        PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${PATH}"
+        PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${OWASP_HOME}/bin:${PATH}"
     }
     agent any
 
@@ -38,7 +39,7 @@ pipeline {
             steps {
                 script {
                 echo 'Running OWASP Dependency-Check...'
-                sh "/opt/dependency-check/bin/dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
+                sh "dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
