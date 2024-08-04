@@ -35,7 +35,6 @@ pipeline {
         stage('OWASP FS SCAN') {
             steps {
                     dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit -nvdApiKey=${env.NVD_KEY} --out dependency-check-report.xml", odcInstallation: 'DP-Check'
-                    sh 'ls -la'  // List files
                     dependencyCheckPublisher pattern: '/var/jenkins_home/workspace/Netflix Website/dependency-check-report.xml'
             }
         }
