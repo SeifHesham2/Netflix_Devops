@@ -3,11 +3,10 @@ pipeline {
         NodejsHome = tool "myNode"
         dockerHome = tool "myDocker"
         SonarQubeHome = tool "mySonar"
-        OWASP_HOME = tool "myDp"
         NVD_KEY = credentials('NVD_KEY')
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
-        SONARQUBE_TOKEN = credentials('SonarNetflix') 
-        PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${OWASP_HOME}/bin:${PATH}"
+        SONARQUBE_TOKEN = credentials('SonarNetflix')
+        PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${PATH}"
     }
     agent any
 
@@ -22,6 +21,16 @@ pipeline {
                 script {
                     echo 'Installing npm dependencies...'
                     sh 'npm install'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    echo 'Running SonarQube analysis...'
+                    withSonarQubeEnv('mySonar') {
+                        sh 'sonar-scanner -Dsonar.projectKey=Netflix -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONARQUBE_TOKEN}'
+                    }
                 }
             }
         }
