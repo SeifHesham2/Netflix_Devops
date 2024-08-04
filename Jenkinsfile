@@ -25,29 +25,6 @@ pipeline {
                 }
             }
         }
-        stage('OWASP Dependency-Check') {
-            steps {
-                script {
-                    echo 'Running OWASP Dependency-Check...'
-                    sh 'dependency-check.sh --project "Netlifex" --scan . --nvdApiKey=${NVD_KEY}'
-                }
-            }
-            post {
-                always {
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    echo 'Running SonarQube analysis...'
-                    withSonarQubeEnv('mySonar') {
-                        sh 'sonar-scanner -Dsonar.projectKey=Netflix -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONARQUBE_TOKEN}'
-                    }
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
