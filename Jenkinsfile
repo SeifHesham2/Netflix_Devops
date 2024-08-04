@@ -3,7 +3,7 @@ pipeline {
         NodejsHome = tool "myNode"
         dockerHome = tool "myDocker"
         SonarQubeHome = tool "mySonar"
-        NVD_KEY = credentials('NVD_KEY')
+        NVD_KEY = credentials('NVD_KEY')  // Accessing the NVD API key from Jenkins credentials
         TMDB_V3_API_KEY = credentials('TMDB_V3_API_KEY')
         SONARQUBE_TOKEN = credentials('SonarNetflix')
         PATH = "${dockerHome}/bin:${NodejsHome}/bin:${SonarQubeHome}/bin:${PATH}"
@@ -24,12 +24,6 @@ pipeline {
                 }
             }
         }
-        stage('OWASP FS SCAN') {
-            steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -37,6 +31,15 @@ pipeline {
                     withSonarQubeEnv('mySonar') {
                         sh 'sonar-scanner -Dsonar.projectKey=Netflix -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONARQUBE_TOKEN}'
                     }
+                }
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+                script {
+                    echo 'Running OWASP Dependency-Check...'
+                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit -Dnvd.api.key=${env.NVD_KEY} -Ddelay=6000", odcInstallation: 'DP-Check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
