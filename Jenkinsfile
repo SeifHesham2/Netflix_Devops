@@ -25,6 +25,13 @@ pipeline {
                 }
             }
         }
+        stage('Debug') {
+            steps {
+                script {
+                    echo "NVD_KEY: ${env.NVD_KEY}"
+                }
+            }
+        }
         stage('OWASP FS SCAN') {
             steps {
                 script {
@@ -32,7 +39,12 @@ pipeline {
                     def dependencyCheckPath = "${OWASP_HOME}/bin/dependency-check.sh"
                     def dependencyCheckCommand = "${dependencyCheckPath} --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
                     echo "Running command: ${dependencyCheckCommand}"
-                    sh "${dependencyCheckCommand} || { echo 'Dependency-Check failed'; exit 1; }"
+                    sh """
+                        ${dependencyCheckCommand} || { 
+                            echo 'Dependency-Check failed'; 
+                            exit 1; 
+                        }
+                    """
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
@@ -47,7 +59,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Build Docker Image') {
             steps {
                 script {
