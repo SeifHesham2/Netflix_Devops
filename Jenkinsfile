@@ -29,7 +29,14 @@ pipeline {
             steps {
                 script {
                     echo 'Running OWASP Dependency-Check...'
-                    sh 'dependency-check.sh --project "Netlifex" --scan . --nvdApiKey=${NVD_KEY} --format XML --out ./reports'
+                    sh '''
+                    #!/bin/bash
+                    set -x  # Enable debug mode
+                    dependency-check.sh --project "Netlifex" --scan . --nvdApiKey=${NVD_KEY} --format XML --out ./reports || {
+                        echo "OWASP Dependency-Check failed"
+                        exit 1
+                    }
+                    '''
                 }
             }
             post {
