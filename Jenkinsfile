@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running OWASP Dependency-Check...'
-                    sh "${OWASP_HOME}/bin/dependency-check.sh --project 'Netlifex' --scan . --nvdApiKey=${NVD_KEY} --verbose"
+                    sh "${OWASP_HOME}/bin/dependency-check.sh --project 'Netlifex' --scan . --nvdApiKey=${NVD_KEY} "
                 }
             }
             post {
