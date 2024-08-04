@@ -37,9 +37,9 @@ pipeline {
         stage('OWASP FS SCAN') {
             steps {
                 script {
-                    echo 'Running OWASP Dependency-Check...'
-                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey '${env.NVD_KEY}' ", odcInstallation: 'DP-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                echo 'Running OWASP Dependency-Check...'
+                sh "/opt/dependency-check/bin/dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
