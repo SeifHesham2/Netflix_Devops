@@ -30,7 +30,7 @@ pipeline {
                 script {
                     echo 'Running OWASP Dependency-Check...'
                     def dependencyCheckPath = "${OWASP_HOME}/bin/dependency-check.sh"
-                    def dependencyCheckCommand = "${dependencyCheckPath} --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${NVD_KEY} -o ./dependency-check-report.xml"
+                    def dependencyCheckCommand = "${dependencyCheckPath} --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${env.NVD_KEY} -o ./dependency-check-report.xml"
                     echo "Running command: ${dependencyCheckCommand}"
                     sh "${dependencyCheckCommand} || { echo 'Dependency-Check failed'; exit 1; }"
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
